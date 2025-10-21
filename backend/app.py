@@ -36,5 +36,23 @@ def update_task_status(task_id):
 
     return jsonify({'message': 'Task status updated successfully', 'task': task})
 
+# run with `curl -X POST 127.0.0.1:5000/tasks/add -H "Content-Type: application/json" -d '{"name": "TASK_NAME", "owner": "TASK_OWNER"}'`
+@app.route('/tasks/add', methods=['POST'])
+def add_task():
+    data = request.get_json()
+    task_name = data.get('name')
+    task_owner = data.get('owner')
+
+    if not task_name:
+        return jsonify({'error': 'New task name is required'}), 400
+
+    if not task_owner:
+        return jsonify({'error': 'New task owner is required'}), 400
+
+    id = 1 + max([id['id'] for id in mock_tasks])
+    mock_tasks.append({'id': id, 'name': task_name, 'owner': task_owner, 'status': 'To Do'})
+
+    return jsonify({'message': 'Task added successfully'})
+
 if __name__ == '__main__':
     app.run(debug=True, port=5000)
