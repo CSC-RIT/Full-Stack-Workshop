@@ -8,18 +8,12 @@ CORS(app)
 
 TASKS_FILE = 'tasks.json'
 
-mock_tasks = [
-    {'id': 1, 'name': 'Complete project proposal', 'owner': 'Alice', 'status': 'In Progress'},
-    {'id': 2, 'name': 'Review design mockups', 'owner': 'Bob', 'status': 'To Do'},
-    {'id': 3, 'name': 'Deploy to staging', 'owner': 'Alice', 'status': 'Done'},
-    {'id': 4, 'name': 'Write user documentation', 'owner': 'Charlie', 'status': 'To Do'},
-    {'id': 5, 'name': 'Fix login bug', 'owner': 'Bob', 'status': 'In Progress'},
-]
-
+# read whole file to python list
 def read_tasks_file():
     with open(TASKS_FILE, 'r') as file:
         return json.load(file)
 
+# add a new task to the file
 def append_task_to_file(task):
     with open(TASKS_FILE, 'r') as file:
         tasks = read_tasks_file()
@@ -27,10 +21,12 @@ def append_task_to_file(task):
         tasks.append(task)
         json.dump(tasks, file, indent=4)
 
+# completely overwrite file with <tasks>
 def write_to_file(tasks):
     with open(TASKS_FILE, 'w') as file:
         json.dump(tasks, file, indent=4)
 
+# run with `curl 127.0.0.1:5000/tasks`
 @app.route('/tasks', methods=['GET'])
 def get_all_tasks():
     return jsonify(read_tasks_file())
@@ -71,10 +67,13 @@ def add_task():
     if not task_owner:
         return jsonify({'error': 'New task owner is required'}), 400
 
-    id = 1 + max([id['id'] for id in read_tasks_file()])
-    append_task_to_file({'id': id, 'name': task_name, 'owner': task_owner, 'status': 'To Do'})
+    # make the id one more than the max
+    id = 1 + max([task['id'] for task in read_tasks_file()])
+    # store it in a variable so we can include it in the return stmt
+    new_task = {'id': id, 'name': task_name, 'owner': task_owner, 'status': 'To Do'}
+    append_task_to_file(new_task)
 
-    return jsonify({'message': 'Task added successfully'})
+    return jsonify({'message': 'Task added successfully', 'task': new_task})
 
 if __name__ == '__main__':
     app.run(debug=True, port=5000)
