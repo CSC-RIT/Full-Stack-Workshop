@@ -1,8 +1,12 @@
 from flask import Flask, jsonify, request
 from flask_cors import CORS
+import json
+import os
 
 app = Flask(__name__)
 CORS(app)
+
+TASKS_FILE = 'tasks.json'
 
 mock_tasks = [
     {'id': 1, 'name': 'Complete project proposal', 'owner': 'Alice', 'status': 'In Progress'},
@@ -12,10 +16,26 @@ mock_tasks = [
     {'id': 5, 'name': 'Fix login bug', 'owner': 'Bob', 'status': 'In Progress'},
 ]
 
+def read_tasks_file():
+    with open(TASKS_FILE, 'r') as file:
+        return json.load(file)
+
+def append_task_to_file(task):
+    with open(TASKS_FILE, 'r') as file:
+        tasks = read_tasks_file()
+    with open(TASKS_FILE, 'w') as file:
+        tasks.append(task)
+        json.dump(tasks, file, indent=4)
+
+def write_to_file(tasks):
+    with open(TASKS_FILE, 'w') as file:
+        json.dump(tasks, file, indent=4)
+
 @app.route('/tasks', methods=['GET'])
 def get_all_tasks():
-    return jsonify(mock_tasks)
+    return jsonify(read_tasks_file())
 
+# run with `curl -X PUT 127.0.0.1:5000/tasks/TASK_NUMBER -H "Content-Type: application/json" -d '{"status": "NEW_STATUS"}'`
 @app.route('/tasks/<int:task_id>', methods=['PUT'])
 def update_task_status(task_id):
     data = request.get_json()
@@ -25,9 +45,11 @@ def update_task_status(task_id):
         return jsonify({'error': 'New status is required'}), 400
 
     task_found = False
-    for task in mock_tasks:
+    tasks = read_tasks_file()
+    for task in tasks:
         if task['id'] == task_id:
             task['status'] = new_status
+            write_to_file(tasks)
             task_found = True
             break
 
@@ -49,8 +71,8 @@ def add_task():
     if not task_owner:
         return jsonify({'error': 'New task owner is required'}), 400
 
-    id = 1 + max([id['id'] for id in mock_tasks])
-    mock_tasks.append({'id': id, 'name': task_name, 'owner': task_owner, 'status': 'To Do'})
+    id = 1 + max([id['id'] for id in read_tasks_file()])
+    append_task_to_file({'id': id, 'name': task_name, 'owner': task_owner, 'status': 'To Do'})
 
     return jsonify({'message': 'Task added successfully'})
 
