@@ -10,6 +10,7 @@ const emit = defineEmits(['search', 'filterStatus'])
 
 const searchTerm = ref('')
 const selectedStatus = ref('All')
+// TODO: add ref for owners
 
 watch(searchTerm, (newVal) => {
   emit('search', newVal)
