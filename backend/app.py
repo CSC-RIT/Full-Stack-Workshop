@@ -26,3 +26,6 @@ def get_all_tasks():
 @app.route('/tasks/<int:task_id>', methods=['PUT'])
 def update_task_status(task_id):
     return jsonify({'error': 'unimplemented!'}), 501 
+
+if __name__ == "__main__":
+    app.run(host='0.0.0.0', port=5000)

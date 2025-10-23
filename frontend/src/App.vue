@@ -10,7 +10,7 @@ const filterOwner = ref('')
 
 const fetchTasks = async () => {
   try {
-    const response = await fetch('http://127.0.0.1:5000/tasks')
+    const response = await fetch('/tasks')
     tasks.value = await response.json()
   } catch (error) {
     console.error('Error fetching tasks:', error)
@@ -62,7 +62,7 @@ const handleFilterStatus = (status) => {
 
 const handleUpdateTaskStatus = async (taskId, newStatus) => {
   try {
-    const response = await fetch(`http://127.0.0.1:5000/tasks/${taskId}`, {
+    const response = await fetch(`/tasks/${taskId}`, {
       method: 'PUT',
       headers: {
         'Content-Type': 'application/json',
