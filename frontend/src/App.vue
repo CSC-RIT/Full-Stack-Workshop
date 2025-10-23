@@ -58,9 +58,7 @@ const handleFilterStatus = (status) => {
   filterStatus.value = status === 'All' ? '' : status
 }
 
-const handleFilterOwner = (owner) => {
-  filterOwner.value = owner === 'All' ? '' : owner
-}
+// TODO: Implement handleFilterOwner
 
 const handleUpdateTaskStatus = async (taskId, newStatus) => {
   try {
@@ -90,7 +88,6 @@ const handleUpdateTaskStatus = async (taskId, newStatus) => {
     <SearchBar
       @search="handleSearch"
       @filterStatus="handleFilterStatus"
-      @filterOwner="handleFilterOwner"
       :statuses="uniqueStatuses"
     />
 
