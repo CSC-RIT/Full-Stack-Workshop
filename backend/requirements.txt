@@ -1,2 +1,3 @@
-Flask
-Flash-Cors
+flask
+flask-cors
+gunicorn
